@@ -65,6 +65,10 @@ public class RoleEntity implements Serializable {
 	@JsonBackReference
 	List<UserRoleEntity> userRole;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "role", cascade = CascadeType.ALL)
+	@JsonBackReference
+	List<RolePermissionEntity> rolePermission;
+
 	public RoleEntity() {
 		// TODO Auto-generated constructor stub
 	}

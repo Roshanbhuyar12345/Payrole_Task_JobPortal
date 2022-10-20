@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class UserContoller {
 	@Autowired
 	private UserInterface userInterface;
 
+	@PreAuthorize("hasRole('updateUser')")
 	@PutMapping("{id}")
 	public ResponseEntity<?> updateUser(@PathVariable("id") Long userId, @RequestBody UserDto userDto)
 			throws Exception {
@@ -42,6 +44,7 @@ public class UserContoller {
 		}
 	}
 
+	@PreAuthorize("hasRole('getUserById')")
 	@GetMapping("{id}")
 	public ResponseEntity<?> getUserById(@PathVariable("id") Long userId) {
 
@@ -49,6 +52,7 @@ public class UserContoller {
 		return new ResponseEntity<>(new SuccessResponceDto("User", "Successfull", iListUserDtos), HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('getAllUser')")
 	@GetMapping()
 	public ResponseEntity<?> getAllUser(@RequestParam(defaultValue = "") String userName,
 			@RequestParam(defaultValue = "1") String pageNo, @RequestParam(defaultValue = "25") String pageSize) {
@@ -58,6 +62,7 @@ public class UserContoller {
 
 	}
 
+	@PreAuthorize("hasRole('deleteUserById')")
 	@DeleteMapping("{id}")
 	public ResponseEntity<?> deleteUserById(@PathVariable("id") Long userId) throws Exception {
 		try {

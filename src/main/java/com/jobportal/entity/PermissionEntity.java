@@ -1,18 +1,24 @@
 package com.jobportal.entity;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.Where;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "permissions")
@@ -47,6 +53,10 @@ public class PermissionEntity {
 	@Column(name = "updated_at")
 	@UpdateTimestamp
 	private Date updatedAt;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "permission", cascade = CascadeType.ALL)
+	@JsonBackReference
+	List<RolePermissionEntity> rolePermission;
 
 	public PermissionEntity() {
 		// TODO Auto-generated constructor stub
