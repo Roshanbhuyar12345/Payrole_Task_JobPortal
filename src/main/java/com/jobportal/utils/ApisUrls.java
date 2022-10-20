@@ -12,5 +12,6 @@ public class ApisUrls {
 	public static final String ROLE = "/roles";
 	public static final String JOBS = "/jobs";
 	public static final String USER_JOBS = "/user-jobs";
+	public static final String USER_ROLE = "/user-role";
 
 }

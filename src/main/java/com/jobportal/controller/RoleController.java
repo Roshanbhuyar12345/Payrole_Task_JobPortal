@@ -1,16 +1,21 @@
 package com.jobportal.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jobportal.dto.ErrorResponceDto;
+import com.jobportal.dto.IListRoleDto;
 import com.jobportal.dto.RoleDto;
 import com.jobportal.dto.SuccessResponceDto;
 import com.jobportal.serviceInterface.RoleInterface;
@@ -24,7 +29,7 @@ public class RoleController {
 	private RoleInterface roleInterface;
 
 	@PostMapping
-	public ResponseEntity<?> addRoleToUser(RoleDto roleDto) {
+	public ResponseEntity<?> addRoleToUser(@RequestBody RoleDto roleDto) {
 		try {
 			this.roleInterface.addRoleToUser(roleDto);
 			return new ResponseEntity<>(new SuccessResponceDto("Role added", "Successfull", roleDto), HttpStatus.OK);
@@ -35,7 +40,8 @@ public class RoleController {
 	}
 
 	@PutMapping("{id}")
-	public ResponseEntity<?> updateRole(@PathVariable("id") Long roleId, RoleDto roleDto) throws Exception {
+	public ResponseEntity<?> updateRole(@PathVariable("id") Long roleId, @RequestBody RoleDto roleDto)
+			throws Exception {
 		try {
 			this.roleInterface.updateRole(roleId, roleDto);
 			return new ResponseEntity<>(new SuccessResponceDto("Updated role", "Successfull", roleDto), HttpStatus.OK);
@@ -56,4 +62,9 @@ public class RoleController {
 		}
 	}
 
+	@GetMapping
+	public ResponseEntity<?> getAllRoles() {
+		List<IListRoleDto> list = this.roleInterface.getAllRoles();
+		return new ResponseEntity<>(new SuccessResponceDto("Roles", "Successfull", list), HttpStatus.OK);
+	}
 }

@@ -1,12 +1,11 @@
 package com.jobportal.serviceImpl;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jobportal.dto.Email;
 import com.jobportal.dto.IListUserJobDto;
 import com.jobportal.dto.UserJobDto;
 import com.jobportal.entity.JobEntity;
@@ -16,6 +15,7 @@ import com.jobportal.exception.ResourceNotFoundException;
 import com.jobportal.repository.JobReposiotry;
 import com.jobportal.repository.UserJobRepository;
 import com.jobportal.repository.UserRepository;
+import com.jobportal.serviceInterface.EmailInterface;
 import com.jobportal.serviceInterface.UserJobInterface;
 import com.jobportal.utils.Pagination;
 
@@ -31,36 +31,43 @@ public class UserJobServiceImpl implements UserJobInterface {
 	@Autowired
 	UserJobRepository userJobRepository;
 
-	@Override
-	public UserJobDto applyJobs(UserJobDto userJobDto) throws Exception {
+	@Autowired
+	private EmailInterface emailInterface;
 
-		ArrayList<UserJobEntity> jobs = new ArrayList<>();
-		UserEntity userEntity = this.userRepository.findById(userJobDto.getUserId())
+	@Override
+	public UserJobDto applyJobs(UserJobDto userJobDto, Long userId) throws Exception {
+
+		UserEntity userEntity = this.userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-		for (int i = 0; i < userJobDto.getJobId().size(); i++) {
+		final long jobId = userJobDto.getJobId();
+		JobEntity job = this.jobReposiotry.findById(jobId)
+				.orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-			final long jobId = userJobDto.getJobId().get(i);
+		UserJobEntity userJob = this.userJobRepository.findByUserIdAndJobId(userId, userJobDto.getJobId());
 
-			JobEntity job = this.jobReposiotry.findById(jobId)
-					.orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+		if (userJob != null) {
 
-			UserJobEntity userJob = this.userJobRepository.findByUserIdAndJobId(userJobDto.getUserId(),
-					userJobDto.getJobId().get(i));
-
-			if (userJob != null) {
-
-				throw new ResourceNotFoundException("Already applied ");
-			}
-
-			UserJobEntity userJobs = new UserJobEntity();
-			userJobs.setUser(userEntity);
-			userJobs.setJob(job);
-			jobs.add(userJobs);
-
+			throw new ResourceNotFoundException("Already applied ");
 		}
-		this.userJobRepository.saveAll(jobs);
+
+		UserJobEntity userJobs = new UserJobEntity();
+		userJobs.setUser(userEntity);
+		userJobs.setJob(job);
+		UserEntity userEntity2 = this.userRepository.findById(userId).orElseThrow();
+		String email = userEntity2.getEmail();
+
+		Email userEntity1 = this.userJobRepository.findAllUserEmail().get(0);
+
+		emailInterface.sendSimpleMessage(email, "Apna jobs", "Job applied sucessfully for  " + job.getJobTitle());
+
+		emailInterface.sendSimpleMessage(userEntity1.getEmail(), "Apna jobs", "Candidate Applied for job"
+				+ "Job title    " + job.getJobTitle() + "Candidate Email " + userEntity2.getEmail());
+
+		this.userJobRepository.save(userJobs);
+
 		return userJobDto;
+
 	}
 
 	@Override

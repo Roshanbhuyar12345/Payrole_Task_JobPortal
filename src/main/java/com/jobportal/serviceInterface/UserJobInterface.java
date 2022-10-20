@@ -7,7 +7,7 @@ import com.jobportal.dto.UserJobDto;
 
 public interface UserJobInterface {
 
-	UserJobDto applyJobs(UserJobDto userJobDto) throws Exception;
+	UserJobDto applyJobs(UserJobDto userJobDto, Long userId) throws Exception;
 
 	Page<IListUserJobDto> getJobsByUserId(Long userId, String pageNumber, String pageSize);
 

@@ -16,9 +16,6 @@ import com.jobportal.dto.ErrorResponceDto;
 import com.jobportal.dto.IListUserJobDto;
 import com.jobportal.dto.SuccessResponceDto;
 import com.jobportal.dto.UserJobDto;
-import com.jobportal.entity.UserEntity;
-import com.jobportal.repository.UserRepository;
-import com.jobportal.serviceInterface.EmailInterface;
 import com.jobportal.serviceInterface.UserJobInterface;
 import com.jobportal.utils.ApisUrls;
 import com.jobportal.utils.GlobalFuction;
@@ -27,21 +24,14 @@ import com.jobportal.utils.GlobalFuction;
 @RequestMapping(ApisUrls.USER_JOBS)
 public class UserJobController {
 	@Autowired
-	private UserRepository userRepository;
-	@Autowired
+
 	private UserJobInterface userJobInterface;
-	@Autowired
-	private EmailInterface emailInterface;
 
 	@PostMapping
-	public ResponseEntity<?> applyJobs(@RequestBody UserJobDto userJobDto) throws Exception {
+	public ResponseEntity<?> applyJobs(@RequestBody UserJobDto userJobDto,
+			@RequestAttribute(GlobalFuction.CUSTUM_ATTRIBUTE_USER_ID) Long userId) throws Exception {
 		try {
-			Long userEntity = userJobDto.getUserId();
-			UserEntity userEntity2 = this.userRepository.findById(userEntity).orElseThrow();
-			String email = userEntity2.getEmail();
-			this.userJobInterface.applyJobs(userJobDto);
-
-			emailInterface.sendSimpleMessage(email, " Job Portal", "Job applied sucessfully");
+			userJobInterface.applyJobs(userJobDto, userId);
 			return new ResponseEntity<>(new SuccessResponceDto("Job applied sucessfully", "Sucess", userJobDto),
 					HttpStatus.CREATED);
 		} catch (Exception e) {

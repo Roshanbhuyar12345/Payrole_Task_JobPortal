@@ -67,6 +67,10 @@ public class UserEntity implements Serializable {
 	@JsonBackReference
 	List<UserJobEntity> users;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonBackReference
+	List<UserRoleEntity> userRole;
+
 	public UserEntity(Long id, String email, String userName, String password, String education, String experience,
 			Date createdAt, Date updatedAt, Boolean isActive, UserEntity createdBy, UserEntity updatedBy) {
 		super();
